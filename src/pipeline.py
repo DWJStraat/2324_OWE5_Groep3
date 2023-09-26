@@ -4,6 +4,7 @@ Written by: David Straat
 Date: 25-sept-2023
 """
 import os
+import argparse
 
 
 class Pipeline:
@@ -53,3 +54,12 @@ class Pipeline:
         self.align()
         self.hmmbuild()
         self.hmmsearch()
+
+if "__name__" == "__main__":
+    argparse = argparse.ArgumentParser()
+    argparse.add_argument('file', help='The name of the file to use.')
+    argparse.add_argument('database', help='The name of the database to use.')
+    argparse.add_argument('iterations', help='The number of iterations to run.')
+    args = argparse.parse_args()
+    pipe = Pipeline(args.file, args.database, args.iterations)
+    pipe.run()
