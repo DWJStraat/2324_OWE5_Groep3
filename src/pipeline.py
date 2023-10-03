@@ -5,6 +5,7 @@ Date: 25-sept-2023
 """
 import os
 import argparse
+from Bio import SCOP
 
 
 class Pipeline:
@@ -13,6 +14,7 @@ class Pipeline:
     """
 
     def __init__(self, file, database, iterations=1):
+        self.domains = {}
         self.blast = None
         self.file = file
         self.database = database
@@ -54,6 +56,16 @@ class Pipeline:
         self.align()
         self.hmmbuild()
         self.hmmsearch()
+
+    def get_domains(self):
+        with open(f'{self.file}-output.txt') as file:
+            content = file.readlines()
+        for line in content:
+            print(line)
+        sequences = []
+        for sequence in sequences:
+            scop_handle = SCOP.search(sequence)
+            self.domains[sequence] = scop_handle
 
 if "__name__" == "__main__":
     argparse = argparse.ArgumentParser()
