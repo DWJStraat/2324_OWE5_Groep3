@@ -1,5 +1,6 @@
 """
 This module is used to get the conservation of a protein sequence and plot it.
+Written by: David Straat
 """
 
 from src import pycanal

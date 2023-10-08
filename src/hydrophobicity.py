@@ -1,6 +1,7 @@
 """
 A module to calculate the hydrophobicity of a protein sequence utilizing the
 Kyte-Doolittle scale.
+Written by: David Straat and Roos Reesink
 """
 
 import pandas as pd
