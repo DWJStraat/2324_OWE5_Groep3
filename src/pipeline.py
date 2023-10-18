@@ -6,6 +6,7 @@ Date: 25-sept-2023
 import argparse
 import os
 
+import numpy as np
 from Bio import SeqIO
 
 from conservation import Conservation
@@ -128,7 +129,9 @@ class Pipeline:
         if name is not None:
             title += f" for {name}"
         self.plot.set_title(title)
-
+        self.plot.xaxis.set_ticks(np.arange(0, len(self.sequences[ref_seq])
+                                            + 1,
+                                            10))
         self.plot = self.plot.get_figure()
 
     def showPlot(self):
