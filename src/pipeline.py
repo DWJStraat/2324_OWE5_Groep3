@@ -3,22 +3,28 @@ A pipeline for building and searching HMMs.
 Written by: David Straat
 Date: 25-sept-2023
 """
-import os
 import argparse
+import os
 
-import Bio
-from Bio import SCOP, SeqIO
-from hydrophobicity import Hydrophobicity
+from Bio import SeqIO
+
 from conservation import Conservation
-import pandas as pd
+from hydrophobicity import Hydrophobicity
 
 
 class Pipeline:
     """
-    This class is a pipeline for building and searching HMMs.
+    A pipeline for building and searching HMMs.
     """
 
-    def __init__(self, file, nr_database, delta_database, iterations=1):
+    def __init__(self, file, nr_database, iterations=1):
+        """
+        Initiates the pipeline.
+        :param file: The file containing a MSAx to run the pipeline on.
+        :param nr_database: The nr database to use.
+        :param iterations: The number of iterations to run.
+        """
+        self.headers = None
         self.frame = None
         self.sequences = None
         self.cons = None
@@ -28,11 +34,13 @@ class Pipeline:
         self.blast = None
         self.file = file
         self.nrDatabase = nr_database
-        self.DeltaBase = delta_database
         self.iter = iterations
         self.msa_file = f'{self.file}-msa.fna'
 
     def readFasta(self):
+        """
+        Reads the fasta file and stores the sequences and headers.
+        """
         self.sequences = []
         self.headers = []
         self.sequences.extend(record.seq for record in SeqIO.parse(
@@ -84,24 +92,16 @@ class Pipeline:
         self.hmmBuild()
         self.hmmSearch()
 
-    def getDomains(self):
-        """
-        Gets the domains of the sequences.
-        """
-        with open(f'{self.file}-output.txt') as file:
-            content = file.readlines()
-        for line in content:
-            print(line)
-        sequences = []
-        for sequence in sequences:
-            scop_handle = SCOP.search(sequence)
-            self.domains[sequence] = scop_handle
-
     def getPlot(self, hydrophobicity: bool = True, conservation: bool = True,
                 graphType: str = 'line', name: str = None, ref_seq: int =
                 0):
         """
-        Gets a plot of the hydrophobicity and/or conservation of the sequences.
+        Gets the plot of the hydrophobicity and conservation of the sequences.
+        :param hydrophobicity: whether to plot the hydrophobicity or not.
+        :param conservation: whether to plot the conservation or not.
+        :param graphType: The type of graph to be plotted. Defaults to 'line'.
+        :param name: The name of the protein sequence to be added to the title.
+        :param ref_seq: The reference sequence ID to use for the conservation.
         """
         ax = None
         height = 10
@@ -118,7 +118,7 @@ class Pipeline:
             if hydrophobicity:
                 descriptor += " and "
             if ax is None:
-                ax = consPanda.plot(kind = graphType, figsize=(width, height))
+                ax = consPanda.plot(kind=graphType, figsize=(width, height))
             else:
                 consPanda.plot(ax=ax, secondary_y=True)
             descriptor += "Conservation"
@@ -131,13 +131,19 @@ class Pipeline:
 
         self.plot = self.plot.get_figure()
 
-
     def showPlot(self):
+        """
+        Shows the plot of the hydrophobicity and conservation of the sequences.
+        """
         if self.plot is None:
             self.getPlot()
         self.plot.show()
 
     def savePlot(self, file_name: str = None):
+        """
+        Saves the plot of the hydrophobicity and conservation of the sequences.
+        :param file_name:
+        """
         if self.plot is None:
             self.getPlot()
         if file_name is None:
@@ -147,13 +153,15 @@ class Pipeline:
 
 if "__name__" == "__main__":
     argparse = argparse.ArgumentParser()
-    argparse.add_argument('file', help='The name of the file to use.')
-    argparse.add_argument('database', help='The name of the database to use.')
+    argparse.add_argument('file', help='The path of the MSA to analyze.')
+    argparse.add_argument('database', help='The name of the NR database to '
+                                           'use.')
     argparse.add_argument('iterations',
                           help='The number of iterations to run.')
     argparse.add_argument('-p', '--plot', help='Show the plot of the '
                                                'hydrophobicity and '
-                                               'conservation of the sequences.',
+                                               'conservation of the '
+                                               'sequences.',
                           action='store_true')
     args = argparse.parse_args()
     pipe = Pipeline(args.file, args.database, args.iterations)
